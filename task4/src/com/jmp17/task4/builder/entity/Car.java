@@ -4,7 +4,9 @@ public class Car extends Vehicle {
 
 	@Override
 	public void setWheels(int wheels) {
-		if (wheels < 4) {throw new IllegalArgumentException();}
+		if (wheels < 4) {
+			throw new IllegalArgumentException("Car cannot have less than 4 wheels, but there were " + wheels);
+		}
 		super.setWheels(wheels);
 	}
 	

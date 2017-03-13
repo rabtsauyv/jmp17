@@ -12,10 +12,9 @@ public class VehicleDirector {
 	}
 	
 	public Vehicle build(String color, int wheels) {
-		builder.create();
-		builder.addWheels(wheels);
-		builder.paint(color);
-		
-		return builder.getVehicle();
+		return builder.create()
+			.addWheels(wheels)
+			.paint(color)
+			.getVehicle();
 	}
 }

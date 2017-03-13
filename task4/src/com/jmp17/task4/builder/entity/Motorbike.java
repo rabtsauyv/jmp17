@@ -4,7 +4,9 @@ public class Motorbike extends Vehicle {
 
 	@Override
 	public void setWheels(int wheels) {
-		if (wheels != 2) {throw new IllegalArgumentException();}
+		if (wheels != 2) {
+			throw new IllegalArgumentException("Motorbike must have 2 wheels, but there were " + wheels);
+		}
 		super.setWheels(wheels);
 	}
 	
