@@ -6,7 +6,7 @@ public class SubModule3 {
 		System.out.println("executing task 3");
 	}
 	
-	public void task2_3() {
-		System.out.println("executing task 2-3");
+	public void operation3() {
+		System.out.println("executing operation 2-3");
 	}
 }

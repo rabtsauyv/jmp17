@@ -12,9 +12,9 @@ public class Facade {
 
 	public void complexTask2() {
 		System.out.println("performing complex task (2)...");
-		m1.task2_1();
-		m2.task2_2();
-		m3.task2_3();
+		m1.operation1();
+		m2.operation2();
+		m3.operation3();
 	}
 
 	public void task3() {
