@@ -6,5 +6,4 @@ public class BaseIcecream implements Icecream {
 	public int cost() {
 		return 20;
 	}
-
 }

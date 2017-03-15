@@ -10,5 +10,4 @@ public class Caramel extends IcecreamDecorator {
 	public int cost() {
 		return 3 + base.cost();
 	}
-
 }

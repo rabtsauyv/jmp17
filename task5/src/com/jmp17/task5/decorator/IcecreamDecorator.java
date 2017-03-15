@@ -7,6 +7,4 @@ public abstract class IcecreamDecorator implements Icecream {
 	protected IcecreamDecorator(Icecream base) {
 		this.base = base;
 	}
-
-
 }

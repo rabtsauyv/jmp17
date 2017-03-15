@@ -10,5 +10,4 @@ public class MultiplyOperation implements Operation {
 		}
 		return res;
 	}
-
 }

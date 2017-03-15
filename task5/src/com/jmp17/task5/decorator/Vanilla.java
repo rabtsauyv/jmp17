@@ -10,5 +10,4 @@ public class Vanilla extends IcecreamDecorator {
 	public int cost() {
 		return 2 + base.cost();
 	}
-
 }

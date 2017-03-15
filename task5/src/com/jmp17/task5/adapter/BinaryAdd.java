@@ -6,5 +6,4 @@ public class BinaryAdd implements BinaryOperation {
 	public Integer evaluate(Integer operand1, Integer operand2) {
 		return operand1 + operand2;
 	}
-
 }

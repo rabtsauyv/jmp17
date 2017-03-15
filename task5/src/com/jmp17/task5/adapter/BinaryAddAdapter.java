@@ -12,6 +12,4 @@ public class BinaryAddAdapter implements BinaryOperation {
 	public Integer evaluate(Integer operand1, Integer operand2) {
 		return multiply.evaluate(operand1, operand2);
 	}
-	
-	
 }

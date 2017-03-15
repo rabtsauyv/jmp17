@@ -19,5 +19,4 @@ public class Operand implements Calculatable {
 		System.err.println("impossible to add SubExpression into simple type");
 		// ignore
 	}
-
 }

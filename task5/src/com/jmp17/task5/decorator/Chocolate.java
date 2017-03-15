@@ -10,5 +10,4 @@ public class Chocolate extends IcecreamDecorator {
 	public int cost() {
 		return 5 + base.cost();
 	}
-
 }
