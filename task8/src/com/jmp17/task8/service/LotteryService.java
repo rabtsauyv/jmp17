@@ -1,5 +1,6 @@
 package com.jmp17.task8.service;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +25,13 @@ public class LotteryService {
 
 	public String buyTicket(String buyer) {
 		try {
-			Ticket ticket = dao.getAvailableTicket();
+			Connection con = dao.startTransaction();
+			Ticket ticket = dao.getAvailableTicket(con);
 			if (ticket == null) {
 				return "";
 			}
-			dao.buyTicket(ticket.getId(), buyer);
+			dao.buyTicket(ticket.getId(), buyer, con);
+			dao.commitTransaction(con);
 			return ticket.getNumber();
 		} catch (SQLException e) {
 			e.printStackTrace();

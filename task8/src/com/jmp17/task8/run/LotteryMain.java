@@ -42,5 +42,4 @@ public class LotteryMain {
 		}
 		System.out.println("Total errors: " + errorCount);
 	}
-
 }
