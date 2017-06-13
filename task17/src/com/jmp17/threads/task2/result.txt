@@ -1,0 +1,6 @@
+Unsafe
+Final value = -768652, execution time: 6
+Syncronized
+Final value = 0, execution time: 104
+Atomic
+Final value = 0, execution time: 45
