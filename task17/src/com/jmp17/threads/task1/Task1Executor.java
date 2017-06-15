@@ -4,11 +4,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Task1Executor {
+	
+	private static final int TIMEOUT = 60_000;
 	
 	private JobsService service = new JobsService();
 	private ResultStorage result = new ResultStorage();
@@ -19,16 +22,22 @@ public class Task1Executor {
 		Object lockC = new Object();
 		
 		Thread threadA = new Thread(() -> {
-			result.setA(service.a());
-			synchronized (lockA) {
-				lockA.notify();
+			try {
+				result.setA(service.a());
+			} finally {
+				synchronized (lockA) {
+					lockA.notify();
+				}
 			}
 		});
 		
 		Thread threadB = new Thread(() -> {
-			result.setB(service.b());
-			synchronized (lockB) {
-				lockB.notify();
+			try {
+				result.setB(service.b());
+			} finally {
+				synchronized (lockB) {
+					lockB.notify();
+				}
 			}
 		});
 		
@@ -36,15 +45,16 @@ public class Task1Executor {
 			try {
 				synchronized (lockA) {
 					if (!result.hasA()) {
-						lockA.wait();
+						lockA.wait(TIMEOUT);
 					}
 				}
+				result.setC(service.c(result.getA()));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
-			result.setC(service.c(result.getA()));
-			synchronized (lockC) {
-				lockC.notify();
+			} finally {
+				synchronized (lockC) {
+					lockC.notify();
+				}
 			}
 		});
 		
@@ -52,18 +62,18 @@ public class Task1Executor {
 			try {
 				synchronized (lockC) {
 					if (!result.hasC()) {
-						lockC.wait();
+						lockC.wait(TIMEOUT);
 					}
 				}
 				synchronized (lockB) {
 					if (!result.hasB()) {
-						lockB.wait();
+						lockB.wait(TIMEOUT);
 					}
 				}
+				result.setD(service.d(result.getC() + result.getB()));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			result.setD(service.d(result.getC() + result.getB()));
 		});
 		
 		threadA.start();
@@ -89,53 +99,68 @@ public class Task1Executor {
 		Condition conditionC = lockC.newCondition();
 		
 		Thread threadA = new Thread(() -> {
-			result.setA(service.a());
-			lockA.lock();
-			conditionA.signal();
-			lockA.unlock();
+			try {
+				result.setA(service.a());
+			} finally {
+				try {
+					lockA.lock();
+					conditionA.signal();
+				} finally {
+					lockA.unlock();
+				}
+			}
 		});
 		
 		Thread threadB = new Thread(() -> {
-			result.setB(service.b());
-			lockB.lock();
-			conditionB.signal();
-			lockB.unlock();
-			
+			try {
+				result.setB(service.b());
+			} finally {
+				try {
+					lockB.lock();
+					conditionB.signal();
+				} finally {
+					lockB.unlock();
+				}
+			}
 		});
 		
 		Thread threadC = new Thread(() -> {
 			try {
 				lockA.lock();
 				if (!result.hasA()) {
-					conditionA.await();
+					conditionA.await(TIMEOUT, TimeUnit.MILLISECONDS);
 				}
-				lockA.unlock();
+				result.setC(service.c(result.getA()));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+			} finally {
+				lockA.unlock();
 			}
-			result.setC(service.c(result.getA()));
-			lockC.lock();
-			conditionC.signal();
-			lockC.unlock();
-			
+			try {
+				lockC.lock();
+				conditionC.signal();
+			} finally {
+				lockC.unlock();
+			}
 		});
 		
 		Thread threadD = new Thread(() -> {
 			try {
 				lockC.lock();
 				if (!result.hasC()) {
-					conditionC.await();
+					conditionC.await(TIMEOUT, TimeUnit.MILLISECONDS);
 				}
-				lockC.unlock();
 				lockB.lock();
 				if (!result.hasB()) {
-					conditionB.await();
+					conditionB.await(TIMEOUT, TimeUnit.MILLISECONDS);
 				}
-				lockB.unlock();
+				result.setD(service.d(result.getC() + result.getB()));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+			} finally {
+				lockC.unlock();
+				lockB.unlock();
 			}
-			result.setD(service.d(result.getC() + result.getB()));
 		});
 		
 		threadA.start();
@@ -153,8 +178,8 @@ public class Task1Executor {
 	}
 	
 	public void executeWithFutures() {
+		ExecutorService executor = Executors.newFixedThreadPool(2);
 		try {
-			ExecutorService executor = Executors.newFixedThreadPool(2);
 			Future<Integer> futureA = executor.submit(() -> service.a());
 			Future<Integer> futureB = executor.submit(() -> service.b());
 			int a = futureA.get();
@@ -165,16 +190,17 @@ public class Task1Executor {
 			int d = futureD.get();
 			
 			System.out.format("a=%d b=%d c=%d d=%d\n", a, b, c, d);
-		
-			executor.shutdown();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			executor.shutdown();
 		}
 	}
 	
 	public void executeWithCompletableFutures() {
+		ExecutorService executor = Executors.newFixedThreadPool(2);
 		try {
-			ExecutorService executor = Executors.newFixedThreadPool(2);
+			
 			CompletableFuture<Integer> futureA = CompletableFuture.supplyAsync(() -> service.a(), executor);
 			CompletableFuture<Integer> futureB = CompletableFuture.supplyAsync(() -> service.b(), executor);
 			CompletableFuture<Integer> futureC = futureA.thenApplyAsync(a -> service.c(a), executor);
@@ -186,10 +212,10 @@ public class Task1Executor {
 			int d = futureD.get();
 			
 			System.out.format("a=%d b=%d c=%d d=%d\n", a, b, c, d);
-			
-			executor.shutdown();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			executor.shutdown();
 		}
 	}
 }
