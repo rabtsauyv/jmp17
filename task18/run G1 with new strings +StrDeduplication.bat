@@ -1,0 +1,1 @@
+java -cp bin\ -Xmx2g -Xloggc:logs\G1_strDedupl_GC.log -XX:+PrintGCDetails -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+PrintStringDeduplicationStatistics com.jmp17.gc.run.Main -useNewStrings

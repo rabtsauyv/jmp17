@@ -1,0 +1,1 @@
+java -cp bin\ -Xmx2g -Xloggc:logs\defaultGC.log -XX:+PrintGCDetails com.jmp17.gc.run.Main
