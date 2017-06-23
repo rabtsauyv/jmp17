@@ -1,0 +1,1 @@
+java -cp bin\ -Xmx2g -Xloggc:logs\ParallelGC.log -XX:+PrintGCDetails -XX:+UseParallelGC com.jmp17.gc.run.Main

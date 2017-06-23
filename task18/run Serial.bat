@@ -1,0 +1,1 @@
+java -cp bin\ -Xmx2g -Xloggc:logs\SerialGC.log -XX:+PrintGCDetails -XX:+UseSerialGC com.jmp17.gc.run.Main

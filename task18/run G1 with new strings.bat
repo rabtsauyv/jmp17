@@ -1,0 +1,1 @@
+java -cp bin\ -Xmx2g -Xloggc:logs\G1_newStr_GC.log -XX:+PrintGCDetails -XX:+UseG1GC com.jmp17.gc.run.Main -useNewStrings
